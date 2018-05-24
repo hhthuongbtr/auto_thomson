@@ -1,0 +1,16 @@
+[program:{name}]
+command=/bin/python {base_dir}/service.sync_alarm.py -s {ip}
+directory={base_dir}
+
+redirect_stderr=true
+stdout_logfile={base_dir}/log/{name}_output_job.log
+stderr_logfile={base_dir}/log/{name}_error_job.log
+ 
+user=root
+autostart=false
+autorestart=false
+priority=991
+
+stopsignal=KILL
+killasgroup=true
+stopasgroup=true
