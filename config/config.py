@@ -12,7 +12,13 @@ SYSTEM = {
         'SOURCE': True, 
         'BLACK_SCREEN': False
         }, 
-    'BREAK_TIME': 20
+    'BREAK_TIME': 20,
+    'list_queue_groups':{
+            'ORIGIN': 'origin',
+            '4500': '4500',
+            'PROBE': 'probe'
+        },
+    'LOG_QUEUE': 'thomson_log'
     }
 
 API = {
@@ -65,3 +71,13 @@ SOCKET = {
     "USER"                  :"monitor",
     "PASSWD"                :"iptv13579"
     }
+
+ERROR_LIST=[
+    "Unknow",           #0 
+    "lost source",      #1
+    "double nodes",     #2
+    "no video",         #3
+    "no audio",         #4
+    "cceror",           #5
+    "output overflow"   #6
+]
