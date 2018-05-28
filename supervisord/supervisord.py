@@ -87,3 +87,5 @@ class Supervisord:
         except Exception as e:
             return e
 
+    def set_schedule_auto(self, log):
+        pass

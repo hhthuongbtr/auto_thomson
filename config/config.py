@@ -79,5 +79,11 @@ ERROR_LIST=[
     "no video",         #3
     "no audio",         #4
     "cceror",           #5
-    "output overflow"   #6
+    "output overflow",  #6
+    "active main",      #7
+    "active backup",    #8
+    "NTP"               #9
 ]
+
+ERROR_CODE_CHECK_ORIGIN_LIST = [1,7]
+ERROR_CODE_CHECK_4500_LIST = [1,2,7,8]

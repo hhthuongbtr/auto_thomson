@@ -3,7 +3,7 @@ import logging
 import logging.config
 import logging.handlers
 
-from .thomson import ThomsonError
+from .thomson import ThomsonError, ThomsonLog
 
 with open("config/python_logging_configuration.json", 'r') as configuration_file:
     config_dict = json.load(configuration_file)

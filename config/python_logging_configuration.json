@@ -19,6 +19,12 @@
         },
         "utils":{
             "format":"AutoThomson: date: %(asctime)s - %(name)s - p%(process)s {%(pathname)s:%(lineno)d} - serverity: %(levelname)s - message: %(message)s"
+        },
+        "thomson":{
+            "format":"AutoThomson: date: %(asctime)s - %(name)s - p%(process)s {%(pathname)s:%(lineno)d} - serverity: %(levelname)s - message: %(message)s"
+        },
+        "unknow_log":{
+            "format":"AutoThomson: date: %(asctime)s - %(name)s - serverity: %(levelname)s - message: %(message)s"
         }
     },
     "handlers": {
@@ -58,11 +64,23 @@
             "class": "logging.FileHandler",
             "level": "DEBUG",
             "formatter": "utils"
+        },
+        "thomson_handler":{
+            "filename": "/var/log/auto_thomson/thomson.log",
+            "class": "logging.FileHandler",
+            "level": "DEBUG",
+            "formatter": "thomson"
+        },
+        "unknow_log_handler":{
+            "filename": "/var/log/auto_thomson/unknow_log.log",
+            "class": "logging.FileHandler",
+            "level": "DEBUG",
+            "formatter": "unknow_log"
         }
     },
     "root": {
         "level": "DEBUG",
-        "handlers": ["auto_thomson_handler"]
+        "handlers": []
     },
     "loggers": {
         "dal": {
@@ -87,6 +105,14 @@
         },
         "utils": {
             "handlers": ["utils_handler"],
+            "level": "DEBUG"
+        },
+        "thomson": {
+            "handlers": ["thomson_handler"],
+            "level": "DEBUG"
+        },
+        "unknow_log": {
+            "handlers": ["unknow_log_handler"],
             "level": "DEBUG"
         }
     }
