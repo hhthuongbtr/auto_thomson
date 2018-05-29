@@ -109,7 +109,7 @@
         },
         "thomson": {
             "handlers": ["thomson_handler"],
-            "level": "DEBUG"
+            "level": "INFO"
         },
         "unknow_log": {
             "handlers": ["unknow_log_handler"],

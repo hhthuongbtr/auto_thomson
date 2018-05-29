@@ -3,12 +3,16 @@ import re
 import logging
 import logging.config
 import logging.handlers
-import sys, time, json
+import os, sys, time, json
 from optparse import OptionParser
-from services import AsRequiredCheck
-from BLL.profile import Profile as ProfileBLL
-from supervisord import Supervisord
-from config import SYSTEM
+from config import SYSTEM, SUPERVISORD
+from utils import File
+
+with open("config/python_logging_configuration.json", 'r') as configuration_file:
+    config_dict = json.load(configuration_file)
+logging.config.dictConfig(config_dict)
+# Create the Logger
+logger = logging.getLogger("auto_thomson")
 
 def get_ip(source):
     ip_pattern=re.compile("\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}")
@@ -16,8 +20,8 @@ def get_ip(source):
     ip = ip[0]
     return ip
 
-
 if __name__ == "__main__":
+    time.sleep(600)
     # Parsing argurments
     parser = OptionParser()
     parser.add_option("-s", "-S", dest="ip", type="string",

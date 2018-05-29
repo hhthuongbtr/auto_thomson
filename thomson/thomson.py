@@ -1,7 +1,9 @@
 import re
 import json
 import logging
-from config import ERROR_LIST
+from supervisord import Supervisord, ScheduleAuto
+from rabbit import PushUnicast, Rabbit
+from config import SYSTEM, ERROR_LIST, ERROR_CODE_CHECK_ORIGIN_LIST, ERROR_CODE_CHECK_4500_LIST
 
 class ThomsonError(object):
     """docstring for ThomsonError"""
@@ -133,7 +135,7 @@ class ThomsonLog(object):
             ip_pattern=re.compile("\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}")
             ip_list = re.findall(ip_pattern, res)
             if not len(ip_list):
-                self.logger.warning("Can not find ip from %s"%(res))
+                self.logger.debug("Can not find ip from %s"%(res))
             else:
                 ip = ip_list[0]
         except Exception as e:
@@ -146,4 +148,45 @@ class ThomsonAuto(object):
         self.logger = logging.getLogger("thomson")
         self.unknow_log_logger = logging.getLogger("unknow_log")
 
-        
+    """
+    Check source on Monitor system
+    """
+    def check_source(self, data, error_code):
+        tl = ThomsonLog()
+        if error_code in ERROR_CODE_CHECK_ORIGIN_LIST:
+            ip = tl.get_ip(data["res"])
+            self.logger.info("Error code: %d, error: %s ,Check %s on ogigin group."%(error_code, ERROR_LIST[error_code],ip))
+            pu = PushUnicast()
+            pu.push_to_origin_group(ip)
+        if error_code in ERROR_CODE_CHECK_4500_LIST:
+            ip = tl.get_ip(data["res"])
+            self.logger.info("Error code: %d, error: %s ,Check %s on 4500 group."%(error_code, ERROR_LIST[error_code],ip))
+            pass
+        return 0
+
+    """
+    Monitor source and auto restart job on thomson
+     - Check active is on --> set schedule auto on supervisord
+    """
+    def return_main(self, data, error_code):
+        tl = ThomsonLog()
+        ip = tl.get_ip(data["res"])
+        if error_code == 1:
+            self.logger.info("Error code: %d, error: %s ,Monitor source %s and auto restart job on thomson."%(error_code, ERROR_LIST[error_code],ip))
+            name = data["host"] + "_" + data["jname"]
+            name = name.replace(" ", "")
+            sa = ScheduleAuto()
+            sa.set_supervisord_schedule(host=data["host"], jid=int(data["jid"]), name=name, ip=tl.get_ip(data["res"]))
+            spvs = Supervisord()
+            spvs.start_job(name)
+        return 0
+
+    def auto(self, log):
+        te = ThomsonError(log)
+        error_code = te.get_error_code()
+        self.logger.debug("-------------> Error code:%d, %s <-------------"%(error_code, ERROR_LIST[error_code]))
+        tl = ThomsonLog()
+        data = tl.conver_json_from_plain_text(log)
+        self.check_source(data, error_code)
+        self.return_main(data, error_code)
+

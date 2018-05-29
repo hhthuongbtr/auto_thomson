@@ -1,5 +1,5 @@
 [program:{name}]
-command=/bin/python {base_dir}/schedule_auto_thomson.py -h {host} -j {jid} -n {name} -s {ip}
+command=/bin/python {handle_dir} -h {host} -j {jid} -n {name} -s {ip}
 directory={base_dir}
 
 redirect_stderr=true
