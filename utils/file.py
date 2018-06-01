@@ -1,5 +1,8 @@
-import os, json
+import os, json, time
 import logging
+import subprocess
+from subprocess import call
+
 
 def is_json(text):
     rt = False
@@ -35,6 +38,7 @@ class File:
         return 0
 
     def delete(self, filename):
+        self.logger.debug("File.delete: %s"%(filename))
         cmnd = ['/bin/rm', '-rf', filename]
         p = subprocess.call(cmnd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         time.sleep(1)

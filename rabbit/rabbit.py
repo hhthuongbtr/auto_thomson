@@ -93,19 +93,3 @@ class PushUnicast(object):
             rb.push(message)
         return 0
         
-    def push_to_host(self, ip):
-        agent_list = self.al.get()
-        if not agent_list["status"] == 200:
-            logger.error(agent_list["message"])
-            return 1
-        flag = False
-        for i in agent_list["data"]:
-            if ip == str(i["ip"]).strip():
-                flag = True
-                break
-        if flag:
-            rb = RabbitQueue(ip)
-            rb.push(message)
-        else:
-            self.logger.warning("Function: PushUnicast.push_to_host('%s') not found."%(self.ip))
-        return 0

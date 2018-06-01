@@ -1,7 +1,7 @@
 import xmlrpclib
-import os
+import os, time
 import logging
-from config import SUPERVISORD
+from config import SUPERVISORD, SYSTEM
 from utils import File
 
 class Supervisord:
@@ -16,7 +16,6 @@ class Supervisord:
             raise e
 
     def get_server_status(self):
-        self.logger.debug("Supervisord: get server status")
         self.logger.debug("Supervisord: get server status")
         try:
             return self.server.supervisor.getState()
@@ -133,10 +132,32 @@ class Supervisord:
 
     def start_job(self, name):
         self.logger.debug("Supervisord: start job %s reload_config --> add_process_group --> start"%(name))
-        self.logger.debug("Supervisord start job %s"%(name))
         self.reload_config()
         self.add_process_group(name)
         self.start_process(name)
+        return 0
+
+    def delete_job(self, name):
+        self.logger.debug("Supervisord: delete job %s Stop_job --> remove_process_group --> delete_config_file --> reload_config"%(name))
+        self.stop_process(name)
+        self.remove_process_group(name)
+        filee = File()
+        conf_dir = SUPERVISORD["CONF_DIR"] + "/" + name + ".ini"
+        filee.delete(conf_dir)
+        return 0
+
+    def remove_exited_job(self):
+        time.sleep(2)
+        job_list = self.get_all_process_info()
+        if not job_list:
+            self.logger.warning("Error: %s"%(str(job_list)))
+            return 1
+        if not type(job_list).__name__  == "list":
+            self.logger.warning("Error, data type is not list: %s"%(str(job_list)))
+            return 1
+        for job in job_list:
+            if job["state"] == 100:
+                self.delete_job(job["name"])
         return 0
 
 class ScheduleAuto(object):
@@ -150,12 +171,12 @@ class ScheduleAuto(object):
             supervisord_config_template = filee.read(SUPERVISORD["CONF_TEMPLATE_DIR"])
         except Exception as e:
             self.logger.error(str(e))
-        handle_dir = os.path.realpath(__file__)
-        if handle_dir[-1:] == "c":
-            handle_dir = handle_dir[:-1]
-        base_dir = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-        supervisord_config = supervisord_config_template.replace('{name}', name)
-        supervisord_config = supervisord_config.replace('{handle_dir}', handle_dir)
+        # handle_dir = os.path.realpath(__file__)
+        # if handle_dir[-1:] == "c":
+        #     handle_dir = handle_dir[:-1]
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        #supervisord_config = supervisord_config_template.replace('{name}', name)
+        # supervisord_config = supervisord_config.replace('{handle_dir}', handle_dir)
         supervisord_config = supervisord_config.replace('{base_dir}', base_dir)
         supervisord_config = supervisord_config.replace('{host}', host)
         supervisord_config = supervisord_config.replace('{jid}', str(jid))

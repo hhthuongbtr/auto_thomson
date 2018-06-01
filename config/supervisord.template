@@ -1,10 +1,10 @@
 [program:{name}]
-command=/bin/python {handle_dir} -h {host} -j {jid} -n {name} -s {ip}
+command=/usr/bin/python {base_dir}/service.schedule_auto.py -H {host} -j {jid} -s {ip}
 directory={base_dir}
 
 redirect_stderr=true
-stdout_logfile={base_dir}/log/{name}_output_job.log
-stderr_logfile={base_dir}/log/{name}_error_job.log
+stdout_logfile=/var/log/supervisord/{name}_output_job.log
+stderr_logfile=/var/log/supervisord/{name}_error_job.log
  
 user=root
 autostart=false

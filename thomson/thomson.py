@@ -126,7 +126,7 @@ class ThomsonLog(object):
                     self.unknow_log_logger.error("Error: len=%d>1, log: %s"%(len(json_data), log))
                 data = json_data[0]
             except Exception as e:
-                logger.error("Error: %s, data: %s"%(str(e), log))
+                self.logger.error("Error: %s, data: %s"%(str(e), log))
         return data
 
     def get_ip(self, res):
