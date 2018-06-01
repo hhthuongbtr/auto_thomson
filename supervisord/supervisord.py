@@ -171,12 +171,8 @@ class ScheduleAuto(object):
             supervisord_config_template = filee.read(SUPERVISORD["CONF_TEMPLATE_DIR"])
         except Exception as e:
             self.logger.error(str(e))
-        # handle_dir = os.path.realpath(__file__)
-        # if handle_dir[-1:] == "c":
-        #     handle_dir = handle_dir[:-1]
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        #supervisord_config = supervisord_config_template.replace('{name}', name)
-        # supervisord_config = supervisord_config.replace('{handle_dir}', handle_dir)
+        supervisord_config = supervisord_config_template.replace('{name}', name)
         supervisord_config = supervisord_config.replace('{base_dir}', base_dir)
         supervisord_config = supervisord_config.replace('{host}', host)
         supervisord_config = supervisord_config.replace('{jid}', str(jid))
@@ -190,6 +186,6 @@ class ScheduleAuto(object):
         supervisord_config = self.create_config_file(host=host, jid=jid, name=name, ip=ip)
         full_dir = SUPERVISORD["CONF_DIR"] + '/' + name + SUPERVISORD["CONF_EXTENSION"]
         filee = File()
-        filee.write(dir = full_dir, text = supervisord_config)
+        print filee.write(dir = full_dir, text = supervisord_config)
         self.logger.info("config file: %s, content: %s"%(full_dir, supervisord_config))
         return 0

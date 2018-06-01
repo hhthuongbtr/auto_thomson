@@ -75,15 +75,15 @@ SOCKET = {
 ERROR_LIST=[
     "Unknow",           #0 
     "lost source",      #1
-    "double nodes",     #2
-    "no video",         #3
-    "no audio",         #4
-    "cceror",           #5
-    "output overflow",  #6
-    "active main",      #7
-    "active backup",    #8
+    "active backup",    #2
+    "active main",      #3
+    "double nodes",     #4
+    "no video",         #5
+    "no audio",         #6
+    "cceror",           #7
+    "output overflow",  #8
     "NTP"               #9
 ]
 
-ERROR_CODE_CHECK_ORIGIN_LIST = [1,7]
-ERROR_CODE_CHECK_4500_LIST = [1,2,7,8]
+ERROR_CODE_CHECK_ORIGIN_LIST = [1,3]
+ERROR_CODE_CHECK_4500_LIST = [1,2,3,4]

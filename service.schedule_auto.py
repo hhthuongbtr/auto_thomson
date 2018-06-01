@@ -68,7 +68,7 @@ if __name__ == "__main__":
     """
     Process monitor source and return main
     """
-    time.sleep(10)
+    time.sleep(300)
     """
     clear supervisord job config
     """

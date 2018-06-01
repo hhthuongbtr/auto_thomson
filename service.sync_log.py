@@ -39,7 +39,7 @@ def callback(ch, method, properties, body):
             t.start()
     except:
         ta = ThomsonAuto()
-        t = threading.Thread(target=ta.auto,
+        t = threading.Thread(target=ta.set_auto,
                             args=(body,))
         t.start()
 

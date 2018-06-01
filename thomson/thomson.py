@@ -81,26 +81,26 @@ class ThomsonError(object):
         error_code = 0
         if self.is_lost_source():
             error_code = 1
-        elif self.is_double_node():
-            error_code = 2
-        elif self.is_no_video():
-            error_code = 3
-        elif self.is_no_audio():
-            error_code = 4
-        elif self.is_cceror():
-            error_code = 5
-        elif self.is_overflow():
-            error_code = 6
-        elif self.is_returned_main():
-            error_code = 7
         elif self.is_active_backup():
+            error_code = 2
+        elif self.is_returned_main():
+            error_code = 3
+        elif self.is_double_node():
+            error_code = 4
+        elif self.is_no_video():
+            error_code = 5
+        elif self.is_no_audio():
+            error_code = 6
+        elif self.is_cceror():
+            error_code = 7
+        elif self.is_overflow():
             error_code = 8
         elif self.is_NTP():
             error_code = 9
         else:
             self.unknow_log_logger.warning(self.log)
         human_creadeble_error = ERROR_LIST[error_code]
-        if error_code == 1 or error_code == 2:
+        if error_code == 1 or error_code == 2 or error_code == 4:
             self.logger.debug("error code: %d, error: %s, log: %s"%(error_code, human_creadeble_error, self.log))
             #print "------------->\n" + "error code: %d, error: %s"%(error_code, human_creadeble_error) + "\n<-------------"
         return error_code
@@ -181,7 +181,7 @@ class ThomsonAuto(object):
             spvs.start_job(name)
         return 0
 
-    def auto(self, log):
+    def set_auto(self, log):
         te = ThomsonError(log)
         error_code = te.get_error_code()
         self.logger.debug("-------------> Error code:%d, %s <-------------"%(error_code, ERROR_LIST[error_code]))
