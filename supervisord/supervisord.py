@@ -142,7 +142,7 @@ class Supervisord:
         self.stop_process(name)
         self.remove_process_group(name)
         filee = File()
-        conf_dir = SUPERVISORD["CONF_DIR"] + "/" + name + ".ini"
+        conf_dir = SUPERVISORD["CONF_DIR"] + "/" + name + SUPERVISORD["CONF_EXTENSION"]
         filee.delete(conf_dir)
         return 0
 
