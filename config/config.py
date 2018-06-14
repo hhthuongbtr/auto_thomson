@@ -1,68 +1,68 @@
 SYSTEM = {
-    'broadcast_time': {
-        'TO': 22, 
-        'FROM': 6
+    "broadcast_time": {
+        "TO": 22, 
+        "FROM": 6
         }, 
-    'HOST': '10.0.0.205', 
-    'libery': {
-        'FFPROBE': '/usr/bin/ffprobe', 
-        'FFMPEG': '/opt/ffmpeg/ffmpeg'
+    "HOST": "10.0.0.205", 
+    "libery": {
+        "FFPROBE": "/usr/bin/ffprobe", 
+        "FFMPEG": "/opt/ffmpeg/ffmpeg"
         }, 
-    'monitor': {
-        'SOURCE': True, 
-        'BLACK_SCREEN': False
+    "monitor": {
+        "SOURCE": True, 
+        "BLACK_SCREEN": False
         }, 
-    'BREAK_TIME': 20,
-    'list_queue_groups':{
-            'ORIGIN': 'origin',
-            '4500': '4500',
-            'PROBE': 'probe'
+    "BREAK_TIME": 20,
+    "list_queue_groups":{
+            "ORIGIN": "origin",
+            "4500": "4500",
+            "PROBE": "probe"
         },
-    'LOG_QUEUE': 'thomson_log'
+    "LOG_QUEUE": "thomson_log"
     }
 
 API = {
-    'master': {
-        'URL': '42.117.9.100', 
-        'PASSWORD': 'iptv13579', 
-        'PORT': 8888, 
-        'USER': 'monitor'
+    "master": {
+        "URL": "42.117.9.100", 
+        "PASSWORD": "iptv13579", 
+        "PORT": 8888, 
+        "USER": "monitor"
         },
-    'slave': {
-        'ACTIVE': False, 
-        'URL': '42.117.9.99', 
-        'PASSWORD': 'iptv13579', 
-        'PORT': 8888, 
-        'USER': 'monitor'
+    "slave": {
+        "ACTIVE": False, 
+        "URL": "42.117.9.99", 
+        "PASSWORD": "iptv13579", 
+        "PORT": 8888, 
+        "USER": "monitor"
         }
     }
 
 DATABASE = {
-    'master': {
-        'NAME': 'monitor', 
-        'HOST': 'localhost', 
-        'USER': 'root', 
-        'ACTIVE': True, 
-        'PASSWORD': 'root', 
-        'PORT': 3306
+    "master": {
+        "NAME": "monitor", 
+        "HOST": "localhost", 
+        "USER": "root", 
+        "ACTIVE": True, 
+        "PASSWORD": "root", 
+        "PORT": 3306
         },
-    'slave': {
-        'NAME': 'monitor', 
-        'HOST': 'localhost', 
-        'USER': 'root', 
-        'ACTIVE': False, 
-        'PASSWORD': 'root', 
-        'PORT': 3306
+    "slave": {
+        "NAME": "monitor", 
+        "HOST": "localhost", 
+        "USER": "root", 
+        "ACTIVE": False, 
+        "PASSWORD": "root", 
+        "PORT": 3306
         }
     }
 
 SUPERVISORD={
-    'HOST'                  : 'localhost',
-    'PORT'                  : 9001,
-    'CONF_DIR'              : '/etc/supervisord/conf.d',
-    'CONTROL_DIR'           : '/usr/bin/supervisorctl',
-    'CONF_TEMPLATE_DIR'     : 'config/supervisord.template',
-    'CONF_EXTENSION'        : '.ini'
+    "HOST"                  : "localhost",
+    "PORT"                  : 9001,
+    "CONF_DIR"              : "/etc/supervisord/conf.d",
+    "CONTROL_DIR"           : "/usr/bin/supervisorctl",
+    "CONF_TEMPLATE_DIR"     : "config/supervisord.template",
+    "CONF_EXTENSION"        : ".ini"
     }
 
 SOCKET = {
@@ -82,8 +82,39 @@ ERROR_LIST=[
     "no audio",         #6
     "cceror",           #7
     "output overflow",  #8
-    "NTP"               #9
+    "NTP",              #9
+    "switch backup"     #10
 ]
 
 ERROR_CODE_CHECK_ORIGIN_LIST = [1,3]
 ERROR_CODE_CHECK_4500_LIST = [1,2,3,4]
+ERROR_CODE_AUTO_RETURN_MAIN = [2]
+
+THOMSON_HOST={
+    "thomson-hcm":
+    {
+        "user" : "iptv_tool",
+        "passwd" : "123456",
+        "host"  :   "172.29.3.189",
+        "url" : "http://%s/services/Maltese" % ("172.29.3.189"),
+        "ident": "hcm",
+    },
+    "thomson-hni":
+    {
+        "user" : "iptv_tool",
+        "passwd" : "123456",
+        "host"  :   "172.29.70.189",
+        "url" : "http://%s/services/Maltese" % ("172.29.70.189"),
+        "ident": "hni",
+    },
+    "thomson-lab":
+    {
+        "user" : "iptv_tool",
+        "passwd" : "123456",
+        "host"  : "172.17.5.110",
+        "url" : "http://%s/services/Maltese" % ("172.17.5.110"),
+        "ident": "lab",
+    }
+}
+
+

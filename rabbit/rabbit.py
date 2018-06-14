@@ -64,7 +64,7 @@ class PushUnicast(object):
         origin_list = self.al.get_origin()
         self.logger.debug(origin_list)
         if not origin_list["status"] == 200:
-            logger.error(origin_list["message"])
+            self.logger.error(origin_list["message"])
             return 1
         for i in origin_list["data"]:
             rb = RabbitQueue(i["ip"])
@@ -75,7 +75,7 @@ class PushUnicast(object):
         agent_4500_list = self.al.get_4500()
         self.logger.debug(agent_4500_list)
         if not agent_4500_list["status"] == 200:
-            logger.error(agent_4500_list["message"])
+            self.logger.error(agent_4500_list["message"])
             return 1
         for i in agent_4500_list["data"]:
             rb = RabbitQueue(i["ip"])
@@ -86,7 +86,7 @@ class PushUnicast(object):
         ott_list = self.al.get_ott()
         self.logger.debug(ott_list)
         if not ott_list["status"] == 200:
-            logger.error(ott_list["message"])
+            self.logger.error(ott_list["message"])
             return 1
         for i in ott_list["data"]:
             rb = RabbitQueue(i["ip"])
