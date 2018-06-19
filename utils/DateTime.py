@@ -1,5 +1,5 @@
 import datetime
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
 import re
 
@@ -45,3 +45,9 @@ class DateTime:
     def get_hour(self, unix_timestamp):
         dt = datetime.fromtimestamp(unix_timestamp)
         return dt.hour
+
+    def get_now_as_logtash_fortmat(self):
+        return datetime.strftime(datetime.now(), '%Y.%m.%d')
+
+    def get_yesterday_as_logtash_fortmat(self):
+        return datetime.strftime(datetime.now() - timedelta(1), '%Y.%m.%d')
