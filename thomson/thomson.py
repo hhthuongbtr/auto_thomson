@@ -212,39 +212,40 @@ class ThomsonAuto(object):
     """
     Check source on Monitor system
     """
-    def check_source(self, data, error_code):
+    def check_source_origin(self, data, error_code):
         tl = ThomsonLog()
         if error_code in ERROR_CODE_CHECK_ORIGIN_LIST:
             ip = tl.get_ip(data["res"])
-            self.logger.info("Error code: %d, error: %s ,Check %s on ogigin group."%(error_code, ERROR_LIST[error_code],ip))
-            pu = PushUnicast()
-            pu.push_to_origin_group(ip)
+            if error_code in ERROR_CODE_AUTO_RETURN_MAIN:
+                if data["cldate"]:
+                    print "cldate"
+                    self.logger.info("Close log --> not monitor or auto")
+                else:
+                    host = data["host"]
+                    jid = data["jid"]
+                    source = ip
+                    message = {"host"    : host,
+                               "jid"     : jid,
+                               "source"  : source
+                              }
+                    message = json.dumps(message)
+                    #pu = PushUnicast()
+                    #pu.push_to_origin_group(message)
+                    rb = Rabbit("10.0.0.205")
+                    rb.push(message)
+            else:
+                self.logger.info("Error code: %d, error: %s ,Check %s on ogigin group."%(error_code, ERROR_LIST[error_code],ip))
+                pu = PushUnicast()
+                pu.push_to_origin_group(ip)
+        return 0
+
+    def check_source_4500(self, data, error_code):
+        tl = ThomsonLog()
         if error_code in ERROR_CODE_CHECK_4500_LIST:
             ip_out_list = tl.get_ip_out_list(data)
             for ip_out in ip_out_list:
                 pu = PushUnicast()
                 pu.push_to_4500_group(ip_out)
-        return 0
-
-    """
-    Monitor source and auto restart job on thomson
-     - Check active is on --> set schedule auto on supervisord
-    """
-    def return_main(self, data, error_code):
-        if error_code not in ERROR_CODE_AUTO_RETURN_MAIN:
-            self.logger.debug("Error code = %d --> not monitor or auto. data: %s"%(error_code, str(data)))
-            return 0
-        if data["cldate"]:
-            self.logger.debug("Close log --> not monitor or auto")
-            return 0
-        tl = ThomsonLog()
-        ip = tl.get_ip(data["res"])
-        name = tl.get_job_name(data)
-        self.logger.info("Error code: %d, error: %s ,Monitor source %s %s and auto restart job on thomson."%(error_code, ERROR_LIST[error_code],name,ip))
-        sa = ScheduleAuto()
-        sa.set_supervisord_schedule(host=data["host"], jid=int(data["jid"]), name=name, ip=ip)
-        spvs = Supervisord()
-        spvs.sa.start_job(name)
         return 0
 
 
@@ -254,6 +255,6 @@ class ThomsonAuto(object):
         self.logger.debug("-------------> Error code:%d, %s <-------------"%(error_code, ERROR_LIST[error_code]))
         tl = ThomsonLog()
         data = tl.conver_json_from_plain_text(log)
-        self.check_source(data, error_code)
-        self.return_main(data, error_code)
+        self.check_source_origin(data, error_code)
+        self.check_source_4500(data, error_code)
 

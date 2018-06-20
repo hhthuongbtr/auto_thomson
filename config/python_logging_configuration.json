@@ -14,6 +14,9 @@
         "auto_thomson":{
             "format":"AutoThomson: date: %(asctime)s - %(name)s - p%(process)s {%(pathname)s:%(lineno)d} - serverity: %(levelname)s - message: %(message)s"
         },
+        "return_main":{
+            "format":"AutoThomson: date: %(asctime)s - %(name)s - p%(process)s {%(pathname)s:%(lineno)d} - serverity: %(levelname)s - message: %(message)s"
+        },
         "supervisord":{
             "format":"AutoThomson: date: %(asctime)s - %(name)s - p%(process)s {%(pathname)s:%(lineno)d} - serverity: %(levelname)s - message: %(message)s"
         },
@@ -49,6 +52,12 @@
         },
         "auto_thomson_handler":{
             "filename": "/var/log/auto_thomson/auto_thomson.log",
+            "class": "logging.FileHandler",
+            "level": "DEBUG",
+            "formatter": "auto_thomson"
+        },
+        "return_main_handler":{
+            "filename": "/var/log/auto_thomson/return_main.log",
             "class": "logging.FileHandler",
             "level": "DEBUG",
             "formatter": "auto_thomson"
@@ -97,6 +106,10 @@
         },
         "auto_thomson": {
             "handlers": ["auto_thomson_handler"],
+            "level": "DEBUG"
+        },
+        "return_main": {
+            "handlers": ["return_main_handler"],
             "level": "DEBUG"
         },
         "supervisord": {
