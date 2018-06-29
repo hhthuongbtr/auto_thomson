@@ -18,7 +18,12 @@ SYSTEM = {
             "4500": "4500",
             "PROBE": "probe"
         },
-    "LOG_QUEUE": "thomson_log"
+    "LOG_QUEUE": "thomson_log",
+    "RUNNING_BACKUP_QUEUE" : "running_backup",
+    "auto": {
+        "DOUBLE_NODE": True,
+        "RETURN_MAIN": True
+        }
     }
 
 API = {
@@ -83,12 +88,18 @@ ERROR_LIST=[
     "cceror",           #7
     "output overflow",  #8
     "NTP",              #9
-    "switch backup"     #10
+    "switch backup",    #10
+    "Modify",           #11
+    "PID",              #12
+    "ServiceId",        #13
+    "stop job",         #14
+    "start job"         #15
 ]
 
 ERROR_CODE_CHECK_ORIGIN_LIST = [1,2,3]
 ERROR_CODE_CHECK_4500_LIST = [1,2,3,4]
 ERROR_CODE_AUTO_RETURN_MAIN = [2]
+ERROR_CODE_AUTO_DOUBLE_NODE = [4]
 
 THOMSON_HOST={
     "thomson-hcm":

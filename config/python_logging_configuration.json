@@ -14,6 +14,9 @@
         "auto_thomson":{
             "format":"AutoThomson: date: %(asctime)s - %(name)s - p%(process)s {%(pathname)s:%(lineno)d} - serverity: %(levelname)s - message: %(message)s"
         },
+        "auto":{
+            "format":"AutoThomson: date: %(asctime)s - %(name)s - serverity: %(levelname)s - message: %(message)s"
+        },
         "return_main":{
             "format":"AutoThomson: date: %(asctime)s - %(name)s - p%(process)s {%(pathname)s:%(lineno)d} - serverity: %(levelname)s - message: %(message)s"
         },
@@ -56,8 +59,21 @@
             "level": "DEBUG",
             "formatter": "auto_thomson"
         },
+        "auto_handler":{
+            "address": "/dev/log",
+            "class": "logging.handlers.SysLogHandler",
+            "level": "WARNING",
+            "facility": "local6",
+            "formatter": "auto"
+        },
         "return_main_handler":{
             "filename": "/var/log/auto_thomson/return_main.log",
+            "class": "logging.FileHandler",
+            "level": "DEBUG",
+            "formatter": "auto_thomson"
+        },
+        "double_node_handler":{
+            "filename": "/var/log/auto_thomson/double_node.log",
             "class": "logging.FileHandler",
             "level": "DEBUG",
             "formatter": "auto_thomson"
@@ -88,8 +104,8 @@
         }
     },
     "root": {
-        "level": "DEBUG",
-        "handlers": []
+        "level": "WARNING",
+        "handlers": ["auto_handler"]
     },
     "loggers": {
         "dal": {
@@ -110,6 +126,10 @@
         },
         "return_main": {
             "handlers": ["return_main_handler"],
+            "level": "DEBUG"
+        },
+        "double_node": {
+            "handlers": ["double_node_handler"],
             "level": "DEBUG"
         },
         "supervisord": {

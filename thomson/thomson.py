@@ -2,7 +2,7 @@ import re
 import json
 import logging
 from thomsonapi import Job, JobDetail
-from config import THOMSON_HOST
+from config import THOMSON_HOST, ERROR_CODE_AUTO_DOUBLE_NODE
 from supervisord import Supervisord, ScheduleAuto
 from rabbit import PushUnicast, Rabbit
 from config import SYSTEM, ERROR_LIST, ERROR_CODE_CHECK_ORIGIN_LIST, ERROR_CODE_CHECK_4500_LIST, ERROR_CODE_AUTO_RETURN_MAIN
@@ -86,6 +86,42 @@ class ThomsonError(object):
             return True
         return False
 
+    def is_modify(self):
+        if not self.log:
+            return None
+        if "Job operation:Modify by" in self.log:
+            return True
+        return False
+
+    def is_pid_error(self):
+        if not self.log:
+            return None
+        if "Configuration inconsistency:PMT PID" in self.log:
+            return True
+        return False
+
+    def is_serviceid_error(self):
+        if not self.log:
+            return None
+        if "ServiceId not present" in self.log:
+            return True
+        return False
+
+    def is_stop_job(self):
+        if not self.log:
+            return None
+        if "Job operation:Stop" in self.log:
+            return True
+        return False
+
+    def is_start_job(self):
+        if not self.log:
+            return None
+        if "Job operation:Start" in self.log:
+            return True
+        return False
+
+
     def get_error_code(self):
         error_code = 0
         if self.is_lost_source():
@@ -108,6 +144,16 @@ class ThomsonError(object):
             error_code = 9
         elif self.is_switch_backup():
             error_code = 10
+        elif self.is_modify():
+            error_code = 11
+        elif self.is_pid_error():
+            error_code = 12
+        elif self.is_serviceid_error():
+            error_code = 13
+        elif self.is_stop_job():
+            error_code = 14
+        elif self.is_start_job():
+            error_code = 15
         else:
             self.unknow_log_logger.warning(self.log)
         human_creadeble_error = ERROR_LIST[error_code]
@@ -208,6 +254,7 @@ class ThomsonAuto(object):
     def __init__(self):
         self.logger = logging.getLogger("thomson")
         self.unknow_log_logger = logging.getLogger("unknow_log")
+        self.double_node_logger = logging.getLogger("double_node")
 
     """
     Check source on Monitor system
@@ -229,10 +276,10 @@ class ThomsonAuto(object):
                                "source"  : source
                               }
                     message = json.dumps(message)
-                    #pu = PushUnicast()
-                    #pu.push_to_origin_group(message)
-                    rb = Rabbit("10.0.0.205")
-                    rb.push(message)
+                    pu = PushUnicast()
+                    pu.push_to_origin_group(message)
+                    #rb = Rabbit("10.0.0.205")
+                    #rb.push(message)
             else:
                 self.logger.info("Error code: %d, error: %s ,Check %s on ogigin group."%(error_code, ERROR_LIST[error_code],ip))
                 pu = PushUnicast()
@@ -248,6 +295,33 @@ class ThomsonAuto(object):
                 pu.push_to_4500_group(ip_out)
         return 0
 
+    def check_double_node(self, data, error_code):
+        if error_code not in ERROR_CODE_AUTO_DOUBLE_NODE:
+            self.double_node_logger.debug("Eror code: %d (%s) --> not auto double node."%(error_code, ERROR_LIST[error_code]))
+            return 1
+        if not SYSTEM["auto"]["DOUBLE_NODE"]:
+            self.double_node_logger.warning("System auto fix double node not active check your config!")
+            return 1
+        jid = int(data["jid"])
+        target_host = data["host"]
+        account = None
+        for i in THOMSON_HOST:
+            if THOMSON_HOST[i]["host"] == target_host:
+                account = THOMSON_HOST[i]
+                break
+        if not account:
+            self.double_node_logger.error("Host %s not found on setting list: %s"%(target_host, str(THOMSON_HOST)))
+            print "Host: %s not found!"%(target_host)
+            return 1
+        jd = JobDetail(account["host"], account["user"], account["passwd"], jid)
+        stop = jd.stop()
+        self.double_node_logger.warning("Job(%s) STOP --> %s"%(str(data), stop))
+        time.sleep(1)
+        start = jd.start()
+        self.double_node_logger.warning("Job(%s) START --> %s"%(str(data), start))
+        self.double_node_logger.critical("Tool just fixed double nodes by stop and start job: Job(%s)"%(str(data)))
+        return 0
+
 
     def set_auto(self, log):
         te = ThomsonError(log)
@@ -257,4 +331,5 @@ class ThomsonAuto(object):
         data = tl.conver_json_from_plain_text(log)
         self.check_source_origin(data, error_code)
         self.check_source_4500(data, error_code)
+        self.check_double_node(data, error_code)
 
