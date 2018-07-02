@@ -85,8 +85,8 @@ def is_not_overworked(data):
     is_over = False
     history = get_history_auto_return_main(data["host"], data["jid"])
     times = len(history)
-    is_over = times >= 3
-    logger.error("Job (%s) auto return main %d/3 on 5 minute --> over worked(%s)"%(str(data), times, is_over))
+    is_over = times >= SYSTEM["REPEAT_LIMIT"]
+    logger.error("Job (%s) auto return main %d/%d on 5 minute --> over worked(%s)"%(str(data), times+1, SYSTEM["REPEAT_LIMIT"], str(is_over)))
     return not is_over
 
 def get_job_backup_info(job_detail_object):
@@ -149,15 +149,38 @@ def return_main(body):
     logger.info("Job(%s) status --> |%s|"%(str(data), job_status))
     if job_status.upper() == "OK":
         origin_source_backup, origin_udp_port = get_job_backup_info(jd)
-        disable_backup = jd.set_backup("false")
-        logger.warning("Job(%s) disable backup --> %s"%(str(data), disable_backup))
+        times_limit = 3
+        times = 1
+        disable_backup = "NotOK"
+        while times <= times_limit:
+            disable_backup = jd.set_backup("false")
+            logger.warning("Job(%s) disable backup --> %s"%(str(data), disable_backup))
+            if disable_backup.upper() == "OK":
+                break
+            times += 1
+            time.sleep(2)
         time.sleep(2)
-        enable_backup = jd.set_backup("true")
-        logger.warning("Job(%s) enable backup --> %s"%(str(data), enable_backup))
+        times = 2
+        enable_backup = "NotOK"
+        while times <= times_limit:
+            enable_backup = jd.set_backup("true")
+            logger.warning("Job(%s) enable backup --> %s"%(str(data), enable_backup))
+            if enable_backup.upper() == "OK":
+                break
+            times += 1
+            time.sleep(2)
+        if enable_backup.upper() == "NOTOK":
+            stop = jd.abort()
+            logger.warning("Job(%s) STOP --> %s"%(str(data), stop))
+            time.sleep(1)
+            enable_backup = jd.set_backup("true")
+            logger.warning("Job(%s) enable backup --> %s"%(str(data), enable_backup))
+            time.sleep(1)
+            start = jd.start()
+            logger.warning("Job(%s) START --> %s"%(str(data), start))
         logger.critical("Tool just returned the main source by disable and enable Active backup: Job(%s)"%(str(data)))
         source_backup, udp_port = get_job_backup_info(jd)
         if origin_source_backup != source_backup:
-            times_limit = 3
             times = 1
             set_backup = "NotOK"
             while times <= times_limit:
@@ -168,7 +191,6 @@ def return_main(body):
                 times += 1
                 time.sleep(2)
         if origin_udp_port != udp_port:
-            times_limit = 3
             times = 1
             set_backup_port = "NotOK"
             time.sleep(2)
