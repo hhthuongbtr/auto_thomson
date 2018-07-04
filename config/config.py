@@ -31,20 +31,17 @@ API = {
 
 DATABASE = {
     "master": {
-        "NAME": "monitor", 
+        "NAME": "thomson", 
         "HOST": "localhost", 
-        "USER": "root", 
+        "USER": "thomson", 
         "ACTIVE": True, 
-        "PASSWORD": "root", 
+        "PASSWORD": "thomson@$@", 
         "PORT": 3306
         },
-    "slave": {
-        "NAME": "monitor", 
-        "HOST": "localhost", 
-        "USER": "root", 
-        "ACTIVE": False, 
-        "PASSWORD": "root", 
-        "PORT": 3306
+    "elastic": {
+        "HOST": "183.80.133.166", 
+        "ACTIVE": True, 
+        "PORT": 9200
         }
     }
 

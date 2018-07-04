@@ -155,7 +155,7 @@ class ThomsonError(object):
         elif self.is_start_job():
             error_code = 15
         else:
-            self.unknow_log_logger.warning(self.log)
+            self.unknow_log_logger.info(self.log)
         human_creadeble_error = ERROR_LIST[error_code]
         if error_code == 1 or error_code == 2 or error_code == 4:
             self.logger.debug("error code: %d, error: %s, log: %s"%(error_code, human_creadeble_error, self.log))
@@ -174,14 +174,14 @@ class ThomsonLog(object):
         try:
             json_data = json.loads(log)
             if len(json_data) > 1:
-                self.unknow_log_logger.error("Error: len=%d>1, log: %s"%(len(json_data), log))
+                self.unknow_log_logger.info("Error: len=%d>1, log: %s"%(len(json_data), log))
             data = json_data[0]
         except Exception as e:
             log_object = log[log.find("{") : log.find("}")+1]
             try:
                 json_data = json.loads(log_object)
                 if len(json_data) > 1:
-                    self.unknow_log_logger.error("Error: len=%d>1, log: %s"%(len(json_data), log))
+                    self.unknow_log_logger.info("Error: len=%d>1, log: %s"%(len(json_data), log))
                 data = json_data
             except Exception as e:
                 self.logger.error("Error: %s, data: %s"%(str(e), log))
@@ -262,10 +262,10 @@ class ThomsonAuto(object):
     def check_source_origin(self, data, error_code):
         tl = ThomsonLog()
         if error_code in ERROR_CODE_CHECK_ORIGIN_LIST:
-            print str(error_code) + str(data)
+            #print str(error_code) + str(data)
             ip = tl.get_ip(data["res"])
             if error_code in ERROR_CODE_AUTO_RETURN_MAIN:
-                print "return main"
+                #print "return main"
                 if data["cldate"]:
                     self.logger.info("Close log --> not monitor or auto")
                 else:
@@ -277,7 +277,7 @@ class ThomsonAuto(object):
                                "source"  : source
                               }
                     message = json.dumps(message)
-                    print message
+                    #print message
                     pu = PushUnicast()
                     pu.push_to_origin_group(message)
                     #rb = Rabbit("10.0.0.205")
@@ -328,7 +328,7 @@ class ThomsonAuto(object):
     def set_auto(self, log):
         te = ThomsonError(log)
         error_code = te.get_error_code()
-        print error_code
+        #print error_code
         self.logger.debug("-------------> Error code:%d, %s <-------------"%(error_code, ERROR_LIST[error_code]))
         tl = ThomsonLog()
         data = tl.conver_json_from_plain_text(log)

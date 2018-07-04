@@ -6,10 +6,11 @@ import logging
 import logging.config
 import logging.handlers
 from rabbit import Rabbit
-from config import SYSTEM, THOMSON_HOST
+from config import SYSTEM, THOMSON_HOST, DATABASE
 from elastic.elastic import *
 from thomsonapi import JobDetail
 import MySQLdb as mdb
+from utils import DateTime
 
 with open("config/python_logging_configuration.json", 'r') as configuration_file:
     config_dict = json.load(configuration_file)
@@ -37,7 +38,12 @@ def is_json(data):
 def is_auto_return_main(data):
     is_auto = False
     query = """select auto from job_auto where jid = %d and host = '%s';"""%(data["jid"], data["host"])
-    session = mdb.connect(host="localhost", port=3306, user="thomson", passwd="thomson@$@", db="thomson", charset='utf8')
+    host = DATABASE["master"]["HOST"]
+    port = DATABASE["master"]["PORT"]
+    user = DATABASE["master"]["USER"]
+    passwd = DATABASE["master"]["PASSWORD"]
+    name = DATABASE["master"]["NAME"]
+    session = mdb.connect(host=host, port=port, user=user, passwd=passwd, db=name, charset='utf8')
     row = None
     if not query:
         print 'No query!'
@@ -87,7 +93,7 @@ def is_not_overworked(data):
     history = get_history_auto_return_main(data["host"], data["jid"])
     times = len(history)
     is_over = times >= SYSTEM["REPEAT_LIMIT"]
-    logger.error("Job (%s) auto return main %d/%d on 5 minute --> over worked(%s)"%(str(data), times+1, SYSTEM["REPEAT_LIMIT"], str(is_over)))
+    logger.info("Job (%s) auto return main %d/%d on 5 minute --> over worked(%s)"%(str(data), times+1, SYSTEM["REPEAT_LIMIT"], str(is_over)))
     return not is_over
 
 def get_job_backup_info(job_detail_object):
@@ -115,7 +121,7 @@ def stop_job(job_detail_object):
     stop = "NotOK"
     while times <= times_limit:
         stop = job_detail_object.abort()
-        logger.warning("Job(id: %s from thomson: %s) STOP --> %s"%(str(job_detail_object.jid), job_detail_object.host, stop))
+        logger.info("Job(id: %s from thomson: %s) STOP --> %s"%(str(job_detail_object.jid), job_detail_object.host, stop))
         if stop.upper() == "OK":
             break
         times += 1
@@ -128,7 +134,7 @@ def start_job(job_detail_object):
     start = "NotOK"
     while times <= times_limit:
         start = job_detail_object.start()
-        logger.warning("Job(id: %s from thomson: %s) START --> %s"%(str(job_detail_object.jid), job_detail_object.host, start))
+        logger.info("Job(id: %s from thomson: %s) START --> %s"%(str(job_detail_object.jid), job_detail_object.host, start))
         if start.upper() == "OK":
             break
         times += 1
@@ -140,7 +146,7 @@ def active_backup(job_detail_object):
     enable_backup = "NotOK"
     while times <= times_limit:
         enable_backup = job_detail_object.set_backup("true")
-        logger.warning("Job(id: %s from thomson: %s) enable active backup --> %s times %d"%(str(job_detail_object.jid), job_detail_object.host, enable_backup, times))
+        logger.info("Job(id: %s from thomson: %s) enable active backup --> %s times %d"%(str(job_detail_object.jid), job_detail_object.host, enable_backup, times))
         if enable_backup.upper() == "OK":
             break
         times += 1
@@ -153,7 +159,7 @@ def deactive_backup(job_detail_object):
     disable_backup = "NotOK"
     while times <= times_limit:
         disable_backup = job_detail_object.set_backup("false")
-        logger.warning("Job(id: %s from thomson: %s) disable active backup --> %s times %d"%(str(job_detail_object.jid), job_detail_object.host, disable_backup, times))
+        logger.info("Job(id: %s from thomson: %s) disable active backup --> %s times %d"%(str(job_detail_object.jid), job_detail_object.host, disable_backup, times))
         if disable_backup.upper() == "OK":
             break
         times += 1
@@ -165,7 +171,7 @@ def set_backup_ip(job_detail_object, ip):
     set_backup = "NotOK"
     while times <= times_limit:
         set_backup = job_detail_object.set_backup_ip_address(ip)
-        logger.warning("Job(id: %s from thomson: %s) thomson tool change value ip backup to %s --> %s"%(str(job_detail_object.jid), job_detail_object.host, ip, set_backup))
+        logger.info("Job(id: %s from thomson: %s) thomson tool change value ip backup to %s --> %s"%(str(job_detail_object.jid), job_detail_object.host, ip, set_backup))
         if set_backup.upper() == "OK":
             break
         times += 1
@@ -179,7 +185,7 @@ def set_backup_udp_port(job_detail_object, port):
     time.sleep(2)
     while times <= times_limit:
         set_backup_port = job_detail_object.set_backup_udp_port(str(port))
-        logger.warning("Job(id: %s from thomson: %s) thomson tool change value udp port backup to %s --> %s"%(str(job_detail_object.jid), job_detail_object.host, port, set_backup_port))
+        logger.info("Job(id: %s from thomson: %s) thomson tool change value udp port backup to %s --> %s"%(str(job_detail_object.jid), job_detail_object.host, port, set_backup_port))
         if set_backup_port.upper() == "OK":
             break
         times += 1
@@ -218,7 +224,8 @@ def return_main(body):
         is_running_backup = is_running_backup_on_thomson(data)
     if not (is_auto and is_running_backup and is_not_overwork):
         logger.warning("Job(%s) is not auto --> check your config: is_auto(%s), is_not_overwork(%s), is_running_backup(%s)"%(str(data), str(is_auto), str(is_not_overwork), str(is_running_backup)))
-        print "Job: %d not auto"%(jid)
+        date_time = DateTime()
+        print "%s Job: %d from thomson %s not auto"%(str(date_time.get_now_as_human_creadeble()),jid,target_host)
         return 0
     if not SYSTEM["auto"]["RETURN_MAIN"]:
         logger.warning("System auto return main not active check your config!")
@@ -255,7 +262,8 @@ def return_main(body):
     return 0
 
 def callback(ch, method, properties, body):
-    print "------------->\n" + body + "\n<-------------"
+    date_time = DateTime()
+    print "------------->\n" + str(date_time.get_now_as_human_creadeble()) + " recieved: " + body + "\n<-------------"
     logger.info("received " + body)
     if not body:
         logger.warning("received " + body + "empty!")
