@@ -262,10 +262,11 @@ class ThomsonAuto(object):
     def check_source_origin(self, data, error_code):
         tl = ThomsonLog()
         if error_code in ERROR_CODE_CHECK_ORIGIN_LIST:
+            print str(error_code) + str(data)
             ip = tl.get_ip(data["res"])
             if error_code in ERROR_CODE_AUTO_RETURN_MAIN:
+                print "return main"
                 if data["cldate"]:
-                    print "cldate"
                     self.logger.info("Close log --> not monitor or auto")
                 else:
                     host = data["host"]
@@ -276,6 +277,7 @@ class ThomsonAuto(object):
                                "source"  : source
                               }
                     message = json.dumps(message)
+                    print message
                     pu = PushUnicast()
                     pu.push_to_origin_group(message)
                     #rb = Rabbit("10.0.0.205")
@@ -326,6 +328,7 @@ class ThomsonAuto(object):
     def set_auto(self, log):
         te = ThomsonError(log)
         error_code = te.get_error_code()
+        print error_code
         self.logger.debug("-------------> Error code:%d, %s <-------------"%(error_code, ERROR_LIST[error_code]))
         tl = ThomsonLog()
         data = tl.conver_json_from_plain_text(log)

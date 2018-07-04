@@ -1,18 +1,4 @@
 SYSTEM = {
-    "broadcast_time": {
-        "TO": 22, 
-        "FROM": 6
-        }, 
-    "HOST": "10.0.0.205", 
-    "libery": {
-        "FFPROBE": "/usr/bin/ffprobe", 
-        "FFMPEG": "/opt/ffmpeg/ffmpeg"
-        }, 
-    "monitor": {
-        "SOURCE": True, 
-        "BLACK_SCREEN": False
-        }, 
-    "BREAK_TIME": 20,
     "list_queue_groups":{
             "ORIGIN": "origin",
             "4500": "4500",
@@ -23,7 +9,8 @@ SYSTEM = {
     "auto": {
         "DOUBLE_NODE": True,
         "RETURN_MAIN": True
-        }
+        },
+    "REPEAT_LIMIT": 10
     }
 
 API = {
@@ -96,7 +83,7 @@ ERROR_LIST=[
     "start job"         #15
 ]
 
-ERROR_CODE_CHECK_ORIGIN_LIST = [1,2,3]
+ERROR_CODE_CHECK_ORIGIN_LIST = [1, 2]
 ERROR_CODE_CHECK_4500_LIST = [1,2,3,4]
 ERROR_CODE_AUTO_RETURN_MAIN = [2]
 ERROR_CODE_AUTO_DOUBLE_NODE = [4]
