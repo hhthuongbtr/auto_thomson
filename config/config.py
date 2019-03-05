@@ -112,4 +112,13 @@ THOMSON_HOST={
     }
 }
 
+THOMSON_NAME={
+    "172.29.3.189":"THOMSON-HCM",
+    "172.29.70.189":"THOMSON-HNI",
+    "172.17.5.110":"THOMSON-LAB"
+}
 
+TELEGRAM_BOT={
+    "token":"744028543:AAHut-6_3hFPQbmrwnLIsPD1BrbfcFkJGjE",
+    "chat_id":-337882382
+}

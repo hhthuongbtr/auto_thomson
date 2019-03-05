@@ -5,7 +5,8 @@ from thomsonapi import Job, JobDetail
 from config import THOMSON_HOST, ERROR_CODE_AUTO_DOUBLE_NODE
 from supervisord import Supervisord, ScheduleAuto
 from rabbit import PushUnicast, Rabbit
-from config import SYSTEM, ERROR_LIST, ERROR_CODE_CHECK_ORIGIN_LIST, ERROR_CODE_CHECK_4500_LIST, ERROR_CODE_AUTO_RETURN_MAIN
+from config import SYSTEM, ERROR_LIST, ERROR_CODE_CHECK_ORIGIN_LIST, ERROR_CODE_CHECK_4500_LIST, ERROR_CODE_AUTO_RETURN_MAIN, TELEGRAM_BOT
+from telegrame import telegrambot
 
 class ThomsonError(object):
     """docstring for ThomsonError"""
@@ -298,12 +299,14 @@ class ThomsonAuto(object):
         return 0
 
     def check_double_node(self, data, error_code):
+        bot = telegrambot(token=TELEGRAM_BOT['token'], chat_id=TELEGRAM_BOT['chat_id'])
         if error_code not in ERROR_CODE_AUTO_DOUBLE_NODE:
             self.double_node_logger.debug("Eror code: %d (%s) --> not auto double node."%(error_code, ERROR_LIST[error_code]))
             return 1
         if not SYSTEM["auto"]["DOUBLE_NODE"]:
             self.double_node_logger.warning("System auto fix double node not active check your config!")
             return 1
+        bot.send_message(data=data)
         jid = int(data["jid"])
         target_host = data["host"]
         account = None
