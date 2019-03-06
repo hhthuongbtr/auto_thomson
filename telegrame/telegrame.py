@@ -25,7 +25,7 @@ class telegrambot(object):
             jid = data["jid"]
             jname = data["jname"]
             desc = data["desc"]
-            return "[{5}]<b>{0}</b>  Severity: <code>{1}</code>, JobName: <code>{2}</code>, JobID: <code>{3}</code>, Description: <code>{4}</code>".format(hostname, sev, jname, jid, desc, now)
+            return "<b>{0}</b> [{5}] Severity: <code>{1}</code>, JobName: <code>{2}</code>, JobID: <code>{3}</code>, Description: <code>{4}</code>".format(hostname, sev, jname, jid, desc, now)
         except Exception as ex:
             print("Error {0}!".format(ex))
             return None
