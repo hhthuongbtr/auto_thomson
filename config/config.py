@@ -120,5 +120,5 @@ THOMSON_NAME={
 
 TELEGRAM_BOT={
     "token":"744028543:AAHut-6_3hFPQbmrwnLIsPD1BrbfcFkJGjE",
-    "chat_id":-337882382
+    "chat_id":-1001238315971
 }
