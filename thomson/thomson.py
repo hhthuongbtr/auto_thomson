@@ -302,6 +302,7 @@ class ThomsonAuto(object):
         bot = telegrambot(token=TELEGRAM_BOT['token'], chat_id=TELEGRAM_BOT['chat_id'])
         if error_code not in ERROR_CODE_AUTO_DOUBLE_NODE:
             self.double_node_logger.debug("Eror code: %d (%s) --> not auto double node."%(error_code, ERROR_LIST[error_code]))
+            #bot.send_message(data=data)
             return 1
         if not SYSTEM["auto"]["DOUBLE_NODE"]:
             self.double_node_logger.warning("System auto fix double node not active check your config!")

@@ -10,7 +10,7 @@ class telegrambot(object):
     def send_message(self, data=""):
         text = self.conver_content(data=data)
         try:
-            self.bot.send_message(chat_id=self.chat_id, text=text, )
+            self.bot.send_message(chat_id=self.chat_id, text=text, parse_mode="HTML")
         except Exception as e:
             print ("Error {0}!".format(e))
 
@@ -23,7 +23,7 @@ class telegrambot(object):
             jid = data["jid"]
             jname = data["jname"]
             desc = data["desc"]
-            return "<b>{0}</b> <br/> Severily: {1} - Job Name: {2} - Job ID: {3} - Description: {4}".format(hostname, sev, jname, jid, desc)
+            return "<b>{0}</b>  Severity: <code>{1}</code>, JobName: <code>{2}</code>, JobID: <code>{3}</code>, Description: <code>{4}</code>".format(hostname, sev, jname, jid, desc)
         except Exception as ex:
             print("Error {0}!".format(ex))
             return None
