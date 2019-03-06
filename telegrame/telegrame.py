@@ -16,14 +16,16 @@ class telegrambot(object):
 
     def conver_content(self, data=""):
         """conver message json to text/html"""
+        from DateTime import DateTime
         data = data
+        now = DateTime().get_now_as_human_creadeble()
         try:
             hostname = THOMSON_NAME[data["host"]]
             sev = data["sev"]
             jid = data["jid"]
             jname = data["jname"]
             desc = data["desc"]
-            return "<b>{0}</b>  Severity: <code>{1}</code>, JobName: <code>{2}</code>, JobID: <code>{3}</code>, Description: <code>{4}</code>".format(hostname, sev, jname, jid, desc)
+            return "[{5}]<b>{0}</b>  Severity: <code>{1}</code>, JobName: <code>{2}</code>, JobID: <code>{3}</code>, Description: <code>{4}</code>".format(hostname, sev, jname, jid, desc, now)
         except Exception as ex:
             print("Error {0}!".format(ex))
             return None
